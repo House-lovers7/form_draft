@@ -1,0 +1,8 @@
+# Ignore everything in node_modules
+node_modules/**
+
+# Ignore source files, as we'll be pushing the build output
+src/**/*.ts
+
+# Ignore the tsconfig
+tsconfig.json

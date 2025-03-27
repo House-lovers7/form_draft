@@ -1,0 +1,1019 @@
+<!-- Form Editor UI -->
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>動的フォームエディタ</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+  <style>
+    :root {
+      --form-primary: #673ab7;
+      --form-primary-dark: #512da8;
+      --form-primary-light: #d1c4e9;
+      --form-accent: #ff4081;
+      --form-text: #212121;
+      --form-secondary-text: #757575;
+      --form-divider: #bdbdbd;
+      --form-background: #fafafa;
+      --form-error: #f44336;
+      --shadow-light: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+      --shadow-medium: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--form-background);
+      color: var(--form-text);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      background-color: white;
+      box-shadow: var(--shadow-light);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .form-title {
+      border: none;
+      font-size: 18px;
+      font-weight: 500;
+      padding: 8px 12px;
+      border-radius: 4px;
+      width: 300px;
+    }
+
+    .form-title:focus {
+      outline: none;
+      background-color: #f5f5f5;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 4px;
+      border: none;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background-color: white;
+      color: var(--form-text);
+      box-shadow: var(--shadow-light);
+      transition: all 0.3s;
+    }
+
+    .btn:hover {
+      box-shadow: var(--shadow-medium);
+    }
+
+    .btn-primary {
+      background-color: var(--form-primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--form-primary-dark);
+    }
+
+    .main-content {
+      max-width: 800px;
+      margin: 24px auto;
+      padding: 0 16px;
+    }
+
+    .form-header {
+      background-color: var(--form-primary);
+      color: white;
+      padding: 24px;
+      border-radius: 8px 8px 0 0;
+      box-shadow: var(--shadow-light);
+    }
+
+    .form-description {
+      border: none;
+      width: 100%;
+      padding: 8px 0;
+      background: transparent;
+      color: white;
+      font-size: 16px;
+      resize: none;
+    }
+
+    .form-description:focus {
+      outline: none;
+    }
+
+    .questions-container {
+      background-color: white;
+      border-radius: 0 0 8px 8px;
+      box-shadow: var(--shadow-light);
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+
+    .question-card {
+      border: 1px solid var(--form-divider);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      position: relative;
+      transition: all 0.3s;
+    }
+
+    .question-card:hover {
+      box-shadow: var(--shadow-light);
+    }
+
+    .selected-question {
+      border-left: 6px solid var(--form-primary);
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .question-title {
+      border: none;
+      font-size: 16px;
+      font-weight: 500;
+      padding: 8px 0;
+      width: 100%;
+    }
+
+    .question-title:focus {
+      outline: none;
+      border-bottom: 2px solid var(--form-primary);
+    }
+
+    .question-type {
+      min-width: 150px;
+      padding: 8px;
+      border: 1px solid var(--form-divider);
+      border-radius: 4px;
+      background-color: white;
+    }
+
+    .question-type:focus {
+      outline: none;
+      border-color: var(--form-primary);
+    }
+
+    .options-container {
+      margin-top: 16px;
+    }
+
+    .option-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .option-radio {
+      margin-right: 8px;
+    }
+
+    .option-text {
+      border: none;
+      padding: 8px;
+      border-bottom: 1px solid var(--form-divider);
+      width: 100%;
+    }
+
+    .option-text:focus {
+      outline: none;
+      border-bottom: 2px solid var(--form-primary);
+    }
+
+    .add-option-btn {
+      background: none;
+      border: none;
+      color: var(--form-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      font-weight: 500;
+    }
+
+    .add-option-btn:hover {
+      background-color: #f5f5f5;
+      border-radius: 4px;
+    }
+
+    .question-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--form-divider);
+    }
+
+    .action-left {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .required-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--form-secondary-text);
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 24px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--form-primary);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(16px);
+    }
+
+    .conditional-section {
+      margin-top: 16px;
+      padding: 16px;
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      border-left: 4px solid var(--form-primary);
+    }
+
+    .conditional-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .conditional-title {
+      font-weight: 500;
+      color: var(--form-primary);
+    }
+
+    .conditional-item {
+      margin-bottom: 16px;
+      padding: 8px;
+      background-color: white;
+      border-radius: 4px;
+      box-shadow: var(--shadow-light);
+    }
+
+    .conditional-option {
+      font-weight: 500;
+      margin-bottom: 8px;
+      padding: 8px;
+      background-color: var(--form-primary-light);
+      border-radius: 4px;
+    }
+
+    .action-buttons-container {
+      display: flex;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--form-secondary-text);
+      padding: 8px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-btn:hover {
+      background-color: #f5f5f5;
+      color: var(--form-primary);
+    }
+
+    .delete-btn:hover {
+      color: var(--form-error);
+    }
+
+    .add-question-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 16px;
+    }
+
+    .add-question-btn {
+      background-color: white;
+      border: 1px dashed var(--form-divider);
+      color: var(--form-primary);
+      padding: 12px 24px;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .add-question-btn:hover {
+      background-color: var(--form-primary-light);
+      border-color: var(--form-primary);
+    }
+
+    .preview-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .preview-content {
+      width: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: var(--shadow-medium);
+      overflow: auto;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      background-color: var(--form-primary);
+      color: white;
+      position: sticky;
+      top: 0;
+    }
+
+    .close-preview {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 24px;
+    }
+
+    .snackbar {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 16px 24px;
+      background-color: #323232;
+      color: white;
+      border-radius: 4px;
+      box-shadow: var(--shadow-medium);
+      z-index: 1000;
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      
+      .action-buttons {
+        width: 100%;
+        justify-content: space-between;
+      }
+      
+      .form-title {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <div class="header-left">
+      <input type="text" class="form-title" id="formTitle" placeholder="無題のフォーム">
+    </div>
+    <div class="action-buttons">
+      <button class="btn" id="previewBtn">
+        <span class="material-icons">visibility</span>
+        プレビュー
+      </button>
+      <button class="btn btn-primary" id="saveBtn">
+        <span class="material-icons">save</span>
+        保存
+      </button>
+      <button class="btn" id="settingsBtn">
+        <span class="material-icons">settings</span>
+        設定
+      </button>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="form-header">
+      <input type="text" class="form-title" id="formTitle2" placeholder="フォームのタイトル" style="color: white; background: transparent; margin-bottom: 8px;">
+      <textarea class="form-description" id="formDescription" placeholder="フォームの説明" rows="2"></textarea>
+    </div>
+
+    <div class="questions-container" id="questionsContainer">
+      <!-- 質問カードはJavaScriptで動的に追加 -->
+    </div>
+
+    <div class="add-question-container">
+      <button class="add-question-btn" id="addQuestionBtn">
+        <span class="material-icons">add</span>
+        質問を追加
+      </button>
+    </div>
+  </div>
+
+  <div class="preview-container" id="previewContainer">
+    <div class="preview-content">
+      <div class="preview-header">
+        <h3>フォームプレビュー</h3>
+        <button class="close-preview" id="closePreviewBtn">&times;</button>
+      </div>
+      <div id="previewBody" style="padding: 16px;">
+        <!-- プレビュー内容はJavaScriptで動的に生成 -->
+      </div>
+    </div>
+  </div>
+
+  <div class="snackbar" id="snackbar"></div>
+
+  <template id="questionCardTemplate">
+    <div class="question-card" data-question-id="{id}">
+      <div class="question-header">
+        <input type="text" class="question-title" placeholder="質問" value="{title}">
+        <select class="question-type">
+          <option value="RADIO">ラジオボタン（選択肢から1つ）</option>
+          <option value="CHECKBOX">チェックボックス（複数選択可）</option>
+          <option value="LIST">ドロップダウン</option>
+          <option value="TEXT">テキスト入力（短文）</option>
+          <option value="PARAGRAPH">テキスト入力（長文）</option>
+          <option value="DATE">日付</option>
+        </select>
+      </div>
+
+      <div class="options-container">
+        <!-- オプションはJavaScriptで動的に追加 -->
+      </div>
+
+      <div class="conditional-section" style="display: none;">
+        <div class="conditional-header">
+          <div class="conditional-title">条件付き質問</div>
+          <button class="btn" id="addConditionalBtn">
+            <span class="material-icons">add</span>
+            条件を追加
+          </button>
+        </div>
+        <div class="conditional-items">
+          <!-- 条件付き質問はJavaScriptで動的に追加 -->
+        </div>
+      </div>
+
+      <div class="question-actions">
+        <div class="action-left">
+          <div class="required-toggle">
+            <span>必須</span>
+            <label class="toggle-switch">
+              <input type="checkbox" class="required-checkbox" {required}>
+              <span class="slider"></span>
+            </label>
+          </div>
+          <input type="text" placeholder="ヘルプテキスト" class="help-text" value="{helpText}" style="border: none; border-bottom: 1px solid #ddd; padding: 4px;">
+        </div>
+        <div class="action-buttons-container">
+          <button class="icon-btn" title="条件付き質問を設定" data-action="conditional">
+            <span class="material-icons">device_hub</span>
+          </button>
+          <button class="icon-btn" title="複製" data-action="duplicate">
+            <span class="material-icons">content_copy</span>
+          </button>
+          <button class="icon-btn delete-btn" title="削除" data-action="delete">
+            <span class="material-icons">delete</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="optionTemplate">
+    <div class="option-item" data-option-id="{id}">
+      <span class="option-radio material-icons">{icon}</span>
+      <input type="text" class="option-text" placeholder="選択肢" value="{value}">
+      <button class="icon-btn delete-btn" title="削除" data-action="delete-option">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+  </template>
+
+  <template id="radioOptionsTemplate">
+    <div class="option-item" data-option-id="{id}">
+      <span class="option-radio material-icons">radio_button_unchecked</span>
+      <input type="text" class="option-text" placeholder="選択肢" value="{value}">
+      <button class="icon-btn delete-btn" title="削除" data-action="delete-option">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+  </template>
+
+  <template id="checkboxOptionsTemplate">
+    <div class="option-item" data-option-id="{id}">
+      <span class="option-radio material-icons">check_box_outline_blank</span>
+      <input type="text" class="option-text" placeholder="選択肢" value="{value}">
+      <button class="icon-btn delete-btn" title="削除" data-action="delete-option">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+  </template>
+
+  <template id="addOptionButtonTemplate">
+    <button class="add-option-btn">
+      <span class="material-icons">add</span>
+      選択肢を追加
+    </button>
+  </template>
+
+  <template id="conditionalItemTemplate">
+    <div class="conditional-item" data-condition-id="{id}">
+      <div class="conditional-option">{option}を選択した場合</div>
+      <div class="conditional-question">
+        <input type="text" class="question-title" placeholder="条件付き質問" value="{title}">
+        <select class="question-type">
+          <option value="TEXT">テキスト入力（短文）</option>
+          <option value="PARAGRAPH">テキスト入力（長文）</option>
+          <option value="RADIO">ラジオボタン（選択肢から1つ）</option>
+          <option value="CHECKBOX">チェックボックス（複数選択可）</option>
+        </select>
+        <div class="required-toggle">
+          <span>必須</span>
+          <label class="toggle-switch">
+            <input type="checkbox" class="required-checkbox" {required}>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+      <button class="icon-btn delete-btn" title="削除" data-action="delete-condition">
+        <span class="material-icons">delete</span>
+      </button>
+    </div>
+  </template>
+
+  <script>
+    // フォームデータを管理するグローバル変数
+    let formData = {
+      title: '無題のフォーム',
+      description: '',
+      questions: []
+    };
+
+    // 唯一のIDを生成
+    function generateId() {
+      return 'id_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    // ページ読み込み時の初期化
+    document.addEventListener('DOMContentLoaded', function() {
+      // サーバーからデータを読み込む
+      google.script.run
+        .withSuccessHandler(initializeForm)
+        .withFailureHandler(handleError)
+        .getFormData();
+
+      // イベントリスナーを設定
+      document.getElementById('formTitle').addEventListener('input', updateFormTitle);
+      document.getElementById('formTitle2').addEventListener('input', updateFormTitle);
+      document.getElementById('formDescription').addEventListener('input', updateFormDescription);
+      document.getElementById('addQuestionBtn').addEventListener('click', addNewQuestion);
+      document.getElementById('saveBtn').addEventListener('click', saveForm);
+      document.getElementById('previewBtn').addEventListener('click', showPreview);
+      document.getElementById('closePreviewBtn').addEventListener('click', closePreview);
+
+      // 質問コンテナの委譲イベントリスナー
+      document.getElementById('questionsContainer').addEventListener('click', handleQuestionActions);
+      document.getElementById('questionsContainer').addEventListener('change', handleQuestionChanges);
+      document.getElementById('questionsContainer').addEventListener('input', handleQuestionInput);
+    });
+
+    // フォームデータを初期化
+    function initializeForm(data) {
+      if (data) {
+        formData = data;
+        document.getElementById('formTitle').value = formData.title;
+        document.getElementById('formTitle2').value = formData.title;
+        document.getElementById('formDescription').value = formData.description;
+        
+        // 質問を表示
+        renderQuestions();
+      } else {
+        // デフォルトの質問を追加
+        addNewQuestion();
+      }
+    }
+
+    // フォームタイトルの更新
+    function updateFormTitle(e) {
+      const value = e.target.value;
+      formData.title = value;
+      document.getElementById('formTitle').value = value;
+      document.getElementById('formTitle2').value = value;
+    }
+
+    // フォーム説明の更新
+    function updateFormDescription(e) {
+      formData.description = e.target.value;
+    }
+
+    // 新しい質問の追加
+    function addNewQuestion() {
+      const questionId = generateId();
+      const question = {
+        id: questionId,
+        title: '',
+        type: 'RADIO',
+        required: false,
+        helpText: '',
+        options: [
+          { id: generateId(), value: 'オプション 1' },
+          { id: generateId(), value: 'オプション 2' }
+        ],
+        conditionalQuestions: {}
+      };
+      
+      formData.questions.push(question);
+      renderQuestion(question);
+    }
+
+    // 質問を表示
+    function renderQuestions() {
+      const container = document.getElementById('questionsContainer');
+      container.innerHTML = '';
+      
+      formData.questions.forEach(question => {
+        renderQuestion(question);
+      });
+    }
+
+    // 単一の質問を表示
+    function renderQuestion(question) {
+      const container = document.getElementById('questionsContainer');
+      const template = document.getElementById('questionCardTemplate');
+      let questionHtml = template.innerHTML
+        .replace('{id}', question.id)
+        .replace('{title}', question.title)
+        .replace('{helpText}', question.helpText)
+        .replace('{required}', question.required ? 'checked' : '');
+      
+      const questionElement = document.createElement('div');
+      questionElement.innerHTML = questionHtml;
+      const questionCard = questionElement.firstElementChild;
+      
+      // 質問タイプを選択
+      const typeSelect = questionCard.querySelector('.question-type');
+      typeSelect.value = question.type;
+      
+      // オプションを表示（選択肢形式の質問タイプの場合）
+      const optionsContainer = questionCard.querySelector('.options-container');
+      renderOptions(question, optionsContainer);
+      
+      container.appendChild(questionCard);
+    }
+
+    // 質問の選択肢を表示
+    function renderOptions(question, container) {
+      container.innerHTML = '';
+      
+      if (['RADIO', 'CHECKBOX', 'LIST'].includes(question.type)) {
+        question.options.forEach(option => {
+          let icon = 'radio_button_unchecked';
+          if (question.type === 'CHECKBOX') {
+            icon = 'check_box_outline_blank';
+          } else if (question.type === 'LIST') {
+            icon = 'arrow_drop_down';
+          }
+          
+          const template = document.getElementById('optionTemplate');
+          let optionHtml = template.innerHTML
+            .replace('{id}', option.id)
+            .replace('{value}', option.value)
+            .replace('{icon}', icon);
+          
+          const optionElement = document.createElement('div');
+          optionElement.innerHTML = optionHtml;
+          container.appendChild(optionElement.firstElementChild);
+        });
+        
+        // 選択肢追加ボタン
+        const addOptionTemplate = document.getElementById('addOptionButtonTemplate');
+        const addOptionButton = document.createElement('div');
+        addOptionButton.innerHTML = addOptionTemplate.innerHTML;
+        container.appendChild(addOptionButton.firstElementChild);
+        
+        // 選択肢追加ボタンのイベントリスナー
+        container.querySelector('.add-option-btn').addEventListener('click', function() {
+          addOption(question, container);
+        });
+      } else if (question.type === 'TEXT') {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'option-text';
+        input.placeholder = '短い回答';
+        input.disabled = true;
+        container.appendChild(input);
+      } else if (question.type === 'PARAGRAPH') {
+        const textarea = document.createElement('textarea');
+        textarea.className = 'option-text';
+        textarea.placeholder = '長い回答';
+        textarea.disabled = true;
+        textarea.rows = 3;
+        container.appendChild(textarea);
+      } else if (question.type === 'DATE') {
+        const input = document.createElement('input');
+        input.type = 'date';
+        input.className = 'option-text';
+        input.disabled = true;
+        container.appendChild(input);
+      }
+    }
+
+    // 選択肢の追加
+    function addOption(question, container) {
+      const option = {
+        id: generateId(),
+        value: `オプション ${question.options.length + 1}`
+      };
+      
+      question.options.push(option);
+      renderOptions(question, container);
+    }
+
+    // 質問アクションのハンドリング（削除、複製など）
+    function handleQuestionActions(e) {
+      const action = e.target.dataset.action || e.target.parentElement.dataset.action;
+      if (!action) return;
+      
+      const questionCard = e.target.closest('.question-card');
+      const questionId = questionCard.dataset.questionId;
+      const questionIndex = formData.questions.findIndex(q => q.id === questionId);
+      
+      if (action === 'delete') {
+        formData.questions.splice(questionIndex, 1);
+        questionCard.remove();
+        showSnackbar('質問を削除しました');
+      } else if (action === 'duplicate') {
+        const question = JSON.parse(JSON.stringify(formData.questions[questionIndex]));
+        question.id = generateId();
+        formData.questions.splice(questionIndex + 1, 0, question);
+        renderQuestions();
+        showSnackbar('質問を複製しました');
+      } else if (action === 'delete-option') {
+        const optionItem = e.target.closest('.option-item');
+        const optionId = optionItem.dataset.optionId;
+        const question = formData.questions[questionIndex];
+        
+        const optionIndex = question.options.findIndex(o => o.id === optionId);
+        question.options.splice(optionIndex, 1);
+        
+        const optionsContainer = questionCard.querySelector('.options-container');
+        renderOptions(question, optionsContainer);
+      } else if (action === 'conditional') {
+        const conditionalSection = questionCard.querySelector('.conditional-section');
+        conditionalSection.style.display = conditionalSection.style.display === 'none' ? 'block' : 'none';
+      }
+    }
+
+    // 質問変更のハンドリング（タイプ、必須など）
+    function handleQuestionChanges(e) {
+      const questionCard = e.target.closest('.question-card');
+      if (!questionCard) return;
+      
+      const questionId = questionCard.dataset.questionId;
+      const questionIndex = formData.questions.findIndex(q => q.id === questionId);
+      const question = formData.questions[questionIndex];
+      
+      if (e.target.classList.contains('question-type')) {
+        question.type = e.target.value;
+        
+        // タイプが変更されたら選択肢をリセット
+        if (['RADIO', 'CHECKBOX', 'LIST'].includes(question.type)) {
+          if (!question.options || question.options.length === 0) {
+            question.options = [
+              { id: generateId(), value: 'オプション 1' },
+              { id: generateId(), value: 'オプション 2' }
+            ];
+          }
+        }
+        
+        const optionsContainer = questionCard.querySelector('.options-container');
+        renderOptions(question, optionsContainer);
+      } else if (e.target.classList.contains('required-checkbox')) {
+        question.required = e.target.checked;
+      }
+    }
+
+    // 質問入力のハンドリング（タイトル、ヘルプテキストなど）
+    function handleQuestionInput(e) {
+      const questionCard = e.target.closest('.question-card');
+      if (!questionCard) return;
+      
+      const questionId = questionCard.dataset.questionId;
+      const questionIndex = formData.questions.findIndex(q => q.id === questionId);
+      const question = formData.questions[questionIndex];
+      
+      if (e.target.classList.contains('question-title')) {
+        question.title = e.target.value;
+      } else if (e.target.classList.contains('help-text')) {
+        question.helpText = e.target.value;
+      } else if (e.target.classList.contains('option-text')) {
+        const optionItem = e.target.closest('.option-item');
+        if (optionItem) {
+          const optionId = optionItem.dataset.optionId;
+          const optionIndex = question.options.findIndex(o => o.id === optionId);
+          if (optionIndex !== -1) {
+            question.options[optionIndex].value = e.target.value;
+          }
+        }
+      }
+    }
+
+    // フォームの保存
+    function saveForm() {
+      google.script.run
+        .withSuccessHandler(function() {
+          showSnackbar('フォームを保存しました');
+        })
+        .withFailureHandler(handleError)
+        .saveFormData(formData);
+    }
+
+    // プレビューの表示
+    function showPreview() {
+      const previewContainer = document.getElementById('previewContainer');
+      const previewBody = document.getElementById('previewBody');
+      
+      // プレビュー内容を生成
+      let previewContent = `
+        <div style="background-color: ${formData.themeColor || '#673ab7'}; color: white; padding: 24px; border-radius: 8px 8px 0 0;">
+          <h2>${formData.title}</h2>
+          <p>${formData.description}</p>
+        </div>
+        <div style="background-color: white; padding: 16px; border-radius: 0 0 8px 8px;">
+      `;
+      
+      formData.questions.forEach(question => {
+        previewContent += `
+          <div style="margin-bottom: 24px; padding: 16px; border: 1px solid #ddd; border-radius: 8px;">
+            <div style="margin-bottom: 8px;">
+              <label style="font-weight: 500;">${question.title} ${question.required ? '<span style="color: red;">*</span>' : ''}</label>
+              ${question.helpText ? `<div style="font-size: 0.9em; color: #666;">${question.helpText}</div>` : ''}
+            </div>
+        `;
+        
+        switch (question.type) {
+          case 'RADIO':
+            question.options.forEach(option => {
+              previewContent += `
+                <div style="margin-bottom: 8px;">
+                  <input type="radio" id="preview_${option.id}" name="preview_${question.id}">
+                  <label for="preview_${option.id}">${option.value}</label>
+                </div>
+              `;
+            });
+            break;
+          case 'CHECKBOX':
+            question.options.forEach(option => {
+              previewContent += `
+                <div style="margin-bottom: 8px;">
+                  <input type="checkbox" id="preview_${option.id}">
+                  <label for="preview_${option.id}">${option.value}</label>
+                </div>
+              `;
+            });
+            break;
+          case 'LIST':
+            previewContent += `
+              <select style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <option value="" disabled selected>選択してください</option>
+                ${question.options.map(option => `<option value="${option.id}">${option.value}</option>`).join('')}
+              </select>
+            `;
+            break;
+          case 'TEXT':
+            previewContent += `
+              <input type="text" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            `;
+            break;
+          case 'PARAGRAPH':
+            previewContent += `
+              <textarea rows="3" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
+            `;
+            break;
+          case 'DATE':
+            previewContent += `
+              <input type="date" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            `;
+            break;
+        }
+        
+        previewContent += `</div>`;
+      });
+      
+      previewContent += `
+        <div style="text-align: center; margin-top: 16px;">
+          <button style="background-color: ${formData.themeColor || '#673ab7'}; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">送信</button>
+        </div>
+      `;
+      
+      previewContent += `</div>`;
+      
+      previewBody.innerHTML = previewContent;
+      previewContainer.style.display = 'flex';
+    }
+
+    // プレビューを閉じる
+    function closePreview() {
+      document.getElementById('previewContainer').style.display = 'none';
+    }
+
+    // エラーハンドリング
+    function handleError(error) {
+      console.error('エラーが発生しました:', error);
+      showSnackbar('エラーが発生しました: ' + error);
+    }
+
+    // スナックバーの表示
+    function showSnackbar(message) {
+      const snackbar = document.getElementById('snackbar');
+      snackbar.textContent = message;
+      snackbar.style.display = 'block';
+      
+      setTimeout(() => {
+        snackbar.style.display = 'none';
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
