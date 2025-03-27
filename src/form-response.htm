@@ -1,0 +1,716 @@
+<!-- Form Response UI -->
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><?= formData.title ?></title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+  <style>
+    :root {
+      --form-primary: <?= formData.themeColor || '#673ab7' ?>;
+      --form-primary-dark: <?= formData.themeColorDark || '#512da8' ?>;
+      --form-primary-light: <?= formData.themeColorLight || '#d1c4e9' ?>;
+      --form-accent: #ff4081;
+      --form-text: #212121;
+      --form-secondary-text: #757575;
+      --form-divider: #bdbdbd;
+      --form-background: #f5f5f5;
+      --form-card-background: #ffffff;
+      --form-error: #f44336;
+      --shadow-light: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+      --shadow-medium: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--form-background);
+      color: var(--form-text);
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 24px auto;
+      padding: 0 16px;
+    }
+
+    .form-header {
+      background-color: var(--form-primary);
+      color: white;
+      padding: 24px;
+      border-radius: 8px 8px 0 0;
+      box-shadow: var(--shadow-light);
+    }
+
+    .form-title {
+      font-size: 24px;
+      font-weight: 400;
+      margin: 0 0 16px 0;
+    }
+
+    .form-description {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .form-body {
+      background-color: var(--form-card-background);
+      border-radius: 0 0 8px 8px;
+      box-shadow: var(--shadow-light);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .form-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+    }
+
+    .question-card {
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--form-divider);
+    }
+
+    .question-card:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .question-title {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .required {
+      color: var(--form-error);
+    }
+
+    .question-help {
+      font-size: 14px;
+      color: var(--form-secondary-text);
+      margin-bottom: 16px;
+    }
+
+    .radio-option, .checkbox-option {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .radio-option:last-child, .checkbox-option:last-child {
+      margin-bottom: 0;
+    }
+
+    .radio-label, .checkbox-label {
+      margin-left: 8px;
+      cursor: pointer;
+    }
+
+    .text-input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--form-divider);
+      border-radius: 4px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+
+    .text-input:focus {
+      outline: none;
+      border-color: var(--form-primary);
+    }
+
+    .textarea-input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--form-divider);
+      border-radius: 4px;
+      font-size: 16px;
+      min-height: 100px;
+      resize: vertical;
+      transition: border-color 0.3s;
+    }
+
+    .textarea-input:focus {
+      outline: none;
+      border-color: var(--form-primary);
+    }
+
+    .dropdown {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--form-divider);
+      border-radius: 4px;
+      font-size: 16px;
+      background-color: white;
+      transition: border-color 0.3s;
+    }
+
+    .dropdown:focus {
+      outline: none;
+      border-color: var(--form-primary);
+    }
+
+    .date-input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--form-divider);
+      border-radius: 4px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+
+    .date-input:focus {
+      outline: none;
+      border-color: var(--form-primary);
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 4px;
+      border: none;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s, box-shadow 0.3s;
+    }
+
+    .btn-primary {
+      background-color: var(--form-primary);
+      color: white;
+      box-shadow: var(--shadow-light);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--form-primary-dark);
+      box-shadow: var(--shadow-medium);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      color: var(--form-primary);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--form-primary-light);
+    }
+
+    .required-indicator {
+      color: var(--form-error);
+      margin-left: 4px;
+    }
+
+    .error-message {
+      color: var(--form-error);
+      font-size: 14px;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .is-invalid .error-message {
+      display: block;
+    }
+
+    .is-invalid .text-input,
+    .is-invalid .textarea-input,
+    .is-invalid .dropdown,
+    .is-invalid .date-input {
+      border-color: var(--form-error);
+    }
+
+    .progress-container {
+      width: 100%;
+      height: 4px;
+      background-color: var(--form-primary-light);
+      margin-bottom: 16px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background-color: var(--form-primary);
+      width: 0;
+      transition: width 0.3s;
+    }
+
+    .page-indicator {
+      font-size: 14px;
+      color: var(--form-secondary-text);
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* レスポンシブデザイン */
+    @media (max-width: 600px) {
+      .container {
+        margin: 0;
+        padding: 0;
+      }
+
+      .form-header, .form-body {
+        border-radius: 0;
+      }
+
+      .form-footer {
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+
+    /* 確認画面のスタイル */
+    .confirmation-container {
+      display: none;
+      background-color: var(--form-card-background);
+      border-radius: 8px;
+      box-shadow: var(--shadow-light);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .confirmation-title {
+      font-size: 24px;
+      font-weight: 400;
+      margin: 0 0 16px 0;
+      color: var(--form-primary);
+    }
+
+    .confirmation-message {
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .answer-row {
+      display: flex;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--form-divider);
+    }
+
+    .answer-row:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .answer-question {
+      font-weight: 500;
+      width: 30%;
+      padding-right: 16px;
+    }
+
+    .answer-value {
+      width: 70%;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <form id="dynamicForm" method="POST" action="<?= formSubmitUrl ?>">
+      <div class="form-header">
+        <h1 class="form-title"><?= formData.title ?></h1>
+        <p class="form-description"><?= formData.description ?></p>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+
+      <div class="page-indicator" id="pageIndicator"></div>
+
+      <div class="form-body">
+        <!-- 質問ページコンテナ -->
+        <div id="formPages">
+          <? for (let i = 0; i < formPages.length; i++) { ?>
+            <div class="form-page <?= i > 0 ? 'hidden' : '' ?>" data-page="<?= i ?>">
+              <? const page = formPages[i]; ?>
+              <? for (let j = 0; j < page.questions.length; j++) { ?>
+                <? const question = page.questions[j]; ?>
+                <div class="question-card" data-question-id="<?= question.id ?>">
+                  <div class="question-title">
+                    <?= question.title ?>
+                    <? if (question.required) { ?>
+                      <span class="required-indicator">*</span>
+                    <? } ?>
+                  </div>
+                  
+                  <? if (question.helpText) { ?>
+                    <div class="question-help"><?= question.helpText ?></div>
+                  <? } ?>
+                  
+                  <div class="question-input">
+                    <? if (question.type === 'RADIO') { ?>
+                      <? for (let k = 0; k < question.options.length; k++) { ?>
+                        <? const option = question.options[k]; ?>
+                        <div class="radio-option">
+                          <input type="radio" id="<?= option.id ?>" name="<?= question.id ?>" value="<?= option.value ?>" <?= question.required ? 'required' : '' ?> data-option-id="<?= option.id ?>">
+                          <label class="radio-label" for="<?= option.id ?>"><?= option.value ?></label>
+                        </div>
+                      <? } ?>
+                    <? } else if (question.type === 'CHECKBOX') { ?>
+                      <? for (let k = 0; k < question.options.length; k++) { ?>
+                        <? const option = question.options[k]; ?>
+                        <div class="checkbox-option">
+                          <input type="checkbox" id="<?= option.id ?>" name="<?= question.id ?>[]" value="<?= option.value ?>" data-option-id="<?= option.id ?>">
+                          <label class="checkbox-label" for="<?= option.id ?>"><?= option.value ?></label>
+                        </div>
+                      <? } ?>
+                    <? } else if (question.type === 'LIST') { ?>
+                      <select class="dropdown" name="<?= question.id ?>" <?= question.required ? 'required' : '' ?>>
+                        <option value="" disabled selected>選択してください</option>
+                        <? for (let k = 0; k < question.options.length; k++) { ?>
+                          <? const option = question.options[k]; ?>
+                          <option value="<?= option.value ?>" data-option-id="<?= option.id ?>"><?= option.value ?></option>
+                        <? } ?>
+                      </select>
+                    <? } else if (question.type === 'TEXT') { ?>
+                      <input type="text" class="text-input" name="<?= question.id ?>" <?= question.required ? 'required' : '' ?>>
+                    <? } else if (question.type === 'PARAGRAPH') { ?>
+                      <textarea class="textarea-input" name="<?= question.id ?>" <?= question.required ? 'required' : '' ?>></textarea>
+                    <? } else if (question.type === 'DATE') { ?>
+                      <input type="date" class="date-input" name="<?= question.id ?>" <?= question.required ? 'required' : '' ?>>
+                    <? } ?>
+                    
+                    <div class="error-message">この質問は必須です</div>
+                  </div>
+                </div>
+              <? } ?>
+            </div>
+          <? } ?>
+        </div>
+      </div>
+
+      <div class="form-footer">
+        <button type="button" id="prevButton" class="btn btn-secondary" style="display: none;">前へ</button>
+        <button type="button" id="nextButton" class="btn btn-primary">次へ</button>
+        <button type="submit" id="submitButton" class="btn btn-primary" style="display: none;">送信</button>
+      </div>
+    </form>
+
+    <!-- 確認画面 -->
+    <div id="confirmationContainer" class="confirmation-container">
+      <h2 class="confirmation-title">回答ありがとうございました</h2>
+      <p class="confirmation-message"><?= formData.confirmationMessage || 'フォームの送信が完了しました。' ?></p>
+      
+      <? if (formData.showAnswerSummary) { ?>
+        <div id="answerSummary">
+          <!-- 回答サマリーはJSで動的に生成 -->
+        </div>
+      <? } ?>
+      
+      <div style="text-align: center; margin-top: 24px;">
+        <button id="newResponseButton" class="btn btn-primary">新しい回答を送信</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // フォームデータとページング管理
+    const formPages = <?= JSON.stringify(formPages) ?>;
+    const conditionalMapping = <?= JSON.stringify(conditionalMapping) ?>;
+    let currentPageIndex = 0;
+    let formAnswers = {};
+
+    // DOM要素
+    const dynamicForm = document.getElementById('dynamicForm');
+    const formPagesContainer = document.getElementById('formPages');
+    const prevButton = document.getElementById('prevButton');
+    const nextButton = document.getElementById('nextButton');
+    const submitButton = document.getElementById('submitButton');
+    const progressBar = document.getElementById('progressBar');
+    const pageIndicator = document.getElementById('pageIndicator');
+    const confirmationContainer = document.getElementById('confirmationContainer');
+    const answerSummary = document.getElementById('answerSummary');
+    const newResponseButton = document.getElementById('newResponseButton');
+
+    // ページ読み込み時の初期化
+    document.addEventListener('DOMContentLoaded', function() {
+      // 進捗バーとページ表示の更新
+      updatePageNavigation();
+      
+      // イベントリスナーの設定
+      prevButton.addEventListener('click', goToPreviousPage);
+      nextButton.addEventListener('click', goToNextPage);
+      dynamicForm.addEventListener('submit', handleFormSubmit);
+      newResponseButton.addEventListener('click', resetForm);
+      
+      // 条件付き質問の表示/非表示制御
+      setupConditionalLogic();
+    });
+
+    // 条件付き質問の制御を設定
+    function setupConditionalLogic() {
+      const radioInputs = document.querySelectorAll('input[type="radio"]');
+      const selectInputs = document.querySelectorAll('select.dropdown');
+      
+      radioInputs.forEach(input => {
+        input.addEventListener('change', handleConditionalChange);
+      });
+      
+      selectInputs.forEach(select => {
+        select.addEventListener('change', handleConditionalChange);
+      });
+    }
+
+    // 条件付き質問の表示/非表示を制御
+    function handleConditionalChange(e) {
+      const questionId = e.target.name;
+      const optionValue = e.target.value;
+      
+      // ラジオボタンの場合はoptionIdも取得
+      let optionId = null;
+      if (e.target.type === 'radio') {
+        optionId = e.target.dataset.optionId;
+      } else if (e.target.tagName === 'SELECT') {
+        const selectedOption = e.target.options[e.target.selectedIndex];
+        optionId = selectedOption.dataset.optionId;
+      }
+      
+      // この選択肢に関連する条件付き質問があるか確認
+      if (conditionalMapping[questionId] && conditionalMapping[questionId][optionId]) {
+        // 現在のページがどのページか特定
+        const currentPage = document.querySelector(`.form-page:not(.hidden)`);
+        const currentPageIndex = parseInt(currentPage.dataset.page);
+        
+        // 次のページに進む前に回答を保存
+        saveAnswers();
+        
+        // 条件付き質問のページに遷移
+        const conditionalPageIndex = conditionalMapping[questionId][optionId];
+        navigateToPage(conditionalPageIndex);
+      }
+    }
+
+    // ページナビゲーションの更新
+    function updatePageNavigation() {
+      const totalPages = formPages.length;
+      
+      // 進捗バーの更新
+      progressBar.style.width = `${((currentPageIndex + 1) / totalPages) * 100}%`;
+      
+      // ページインジケータの更新
+      pageIndicator.textContent = `ページ ${currentPageIndex + 1} / ${totalPages}`;
+      
+      // ボタン表示の更新
+      prevButton.style.display = currentPageIndex > 0 ? 'block' : 'none';
+      
+      if (currentPageIndex === totalPages - 1) {
+        nextButton.style.display = 'none';
+        submitButton.style.display = 'block';
+      } else {
+        nextButton.style.display = 'block';
+        submitButton.style.display = 'none';
+      }
+    }
+
+    // 前のページへ移動
+    function goToPreviousPage() {
+      if (currentPageIndex > 0) {
+        // 回答を保存
+        saveAnswers();
+        
+        // 前のページに移動
+        navigateToPage(currentPageIndex - 1);
+      }
+    }
+
+    // 次のページへ移動
+    function goToNextPage() {
+      // 現在のページの必須項目を検証
+      if (validateCurrentPage()) {
+        // 回答を保存
+        saveAnswers();
+        
+        // 次のページに移動
+        navigateToPage(currentPageIndex + 1);
+      }
+    }
+
+    // 特定のページに移動
+    function navigateToPage(pageIndex) {
+      // 全てのページを非表示
+      const pages = document.querySelectorAll('.form-page');
+      pages.forEach(page => {
+        page.classList.add('hidden');
+      });
+      
+      // 指定したページを表示
+      const targetPage = document.querySelector(`.form-page[data-page="${pageIndex}"]`);
+      if (targetPage) {
+        targetPage.classList.remove('hidden');
+        currentPageIndex = pageIndex;
+        updatePageNavigation();
+        
+        // すでに回答があれば復元
+        restoreAnswers();
+        
+        // ページの先頭にスクロール
+        window.scrollTo(0, 0);
+      }
+    }
+
+    // 現在のページの必須項目を検証
+    function validateCurrentPage() {
+      const currentPage = document.querySelector(`.form-page[data-page="${currentPageIndex}"]`);
+      const requiredInputs = currentPage.querySelectorAll('[required]');
+      let isValid = true;
+      
+      requiredInputs.forEach(input => {
+        const questionCard = input.closest('.question-card');
+        
+        if (!input.value) {
+          questionCard.querySelector('.question-input').classList.add('is-invalid');
+          isValid = false;
+        } else {
+          questionCard.querySelector('.question-input').classList.remove('is-invalid');
+        }
+        
+        // ラジオボタンの場合は少なくとも1つ選択されているか確認
+        if (input.type === 'radio') {
+          const name = input.name;
+          const checkedRadio = currentPage.querySelector(`input[name="${name}"]:checked`);
+          
+          if (!checkedRadio) {
+            questionCard.querySelector('.question-input').classList.add('is-invalid');
+            isValid = false;
+          } else {
+            questionCard.querySelector('.question-input').classList.remove('is-invalid');
+          }
+        }
+      });
+      
+      return isValid;
+    }
+
+    // 回答を保存
+    function saveAnswers() {
+      const currentPage = document.querySelector(`.form-page[data-page="${currentPageIndex}"]`);
+      const inputs = currentPage.querySelectorAll('input, textarea, select');
+      
+      inputs.forEach(input => {
+        if (input.type === 'radio') {
+          if (input.checked) {
+            formAnswers[input.name] = input.value;
+          }
+        } else if (input.type === 'checkbox') {
+          if (!formAnswers[input.name]) {
+            formAnswers[input.name] = [];
+          }
+          
+          if (input.checked) {
+            formAnswers[input.name].push(input.value);
+          }
+        } else {
+          formAnswers[input.name] = input.value;
+        }
+      });
+    }
+
+    // 回答を復元
+    function restoreAnswers() {
+      const currentPage = document.querySelector(`.form-page[data-page="${currentPageIndex}"]`);
+      
+      for (const [name, value] of Object.entries(formAnswers)) {
+        const inputs = currentPage.querySelectorAll(`[name="${name}"]`);
+        
+        inputs.forEach(input => {
+          if (input.type === 'radio') {
+            input.checked = input.value === value;
+          } else if (input.type === 'checkbox') {
+            input.checked = Array.isArray(value) && value.includes(input.value);
+          } else {
+            input.value = value;
+          }
+        });
+      }
+    }
+
+    // フォーム送信処理
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      
+      // 最後のページの必須項目を検証
+      if (validateCurrentPage()) {
+        // 回答を保存
+        saveAnswers();
+        
+        // フォームデータをGoogle Scriptに送信
+        google.script.run
+          .withSuccessHandler(handleFormSuccess)
+          .withFailureHandler(handleFormError)
+          .submitFormResponse(formAnswers);
+      }
+    }
+
+    // フォーム送信成功時の処理
+    function handleFormSuccess(response) {
+      // フォームを非表示
+      dynamicForm.style.display = 'none';
+      
+      // 確認画面を表示
+      confirmationContainer.style.display = 'block';
+      
+      // 回答サマリーを表示
+      if (answerSummary) {
+        let summaryHtml = '';
+        
+        for (const question of response.questions) {
+          const answer = response.answers[question.id];
+          if (answer) {
+            summaryHtml += `
+              <div class="answer-row">
+                <div class="answer-question">${question.title}</div>
+                <div class="answer-value">${Array.isArray(answer) ? answer.join(', ') : answer}</div>
+              </div>
+            `;
+          }
+        }
+        
+        answerSummary.innerHTML = summaryHtml;
+      }
+      
+      // ページの先頭にスクロール
+      window.scrollTo(0, 0);
+    }
+
+    // フォーム送信エラー時の処理
+    function handleFormError(error) {
+      alert('フォームの送信中にエラーが発生しました: ' + error);
+    }
+
+    // フォームのリセット
+    function resetForm() {
+      // フォームを表示
+      dynamicForm.style.display = 'block';
+      
+      // 確認画面を非表示
+      confirmationContainer.style.display = 'none';
+      
+      // フォームをリセット
+      dynamicForm.reset();
+      formAnswers = {};
+      
+      // 最初のページに戻る
+      navigateToPage(0);
+    }
+  </script>
+</body>
+</html>

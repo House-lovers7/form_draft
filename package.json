@@ -1,0 +1,21 @@
+{
+  "name": "form_draft",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && npm run copy-html",
+    "copy-html": "cp src/*.html build/",
+    "push": "clasp push",
+    "deploy": "npm run build && npm run push",
+    "open": "echo 'Visit: https://script.google.com/d/1mWJqv5SywsNmJxMDuu2iCUeKxJR2I7GuRzLyt5hcL37KZvVCCPjj0o1b/edit'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/google-apps-script": "^1.0.64",
+    "typescript": "^5.0.4"
+  },
+  "packageManager": "pnpm@8.15.1+sha512.831cf4c5f8b8374af71521d4d153db49d7086de615c2af7cb5e9d7eb8ba630ddac46fea495d643e552ef2e68a3aa99a3e5e9fbee8696702967504df5c59cb273"
+}
